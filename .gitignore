@@ -1,8 +1,12 @@
 *.log
 gitlab/config/*
+!gitlab/config/.keep
 gitlab/logs/*
+!gitlab/logs/.keep
 gitlab/data/*
+!/gitlab/data/.keep
 
 jenkins/persistent/*
+!jenkins/persistent/.keep
 fronent/html/*
 backend/html/*
