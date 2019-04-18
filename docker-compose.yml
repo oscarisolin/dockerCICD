@@ -1,0 +1,104 @@
+version: "3.7"
+
+networks:
+  devNW:
+    name: devNW
+
+services:
+
+  jenkins:
+    container_name: jenkins    
+    build: ./jenkins    
+    # user: jenkins
+    networks:
+      - devNW
+    ports:
+      - "8080:8080"
+      - "5000:5000"
+      - "50000:50000"
+    volumes:
+      - ./jenkins/persistent:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      JENKINS_HOST_HOME: "/data/jenkins"
+
+  pacbroker:
+    container_name: pactbroker
+    networks:
+     - devNW
+    image: dius/pact-broker
+    links:
+      - postgres
+    ports:
+      - "8081:80"
+    environment:
+      PACT_BROKER_DATABASE_USERNAME: postgres
+      PACT_BROKER_DATABASE_PASSWORD: password
+      PACT_BROKER_DATABASE_HOST: postgres
+      PACT_BROKER_DATABASE_NAME: postgres
+      PACT_BROKER_WEBHOOK_SCHEME_WHITELIST: http
+
+  gitlab:
+    container_name: gitlab
+    image: 'gitlab/gitlab-ce:latest'
+    restart: always
+    networks:
+      - devNW
+    ports:
+     - '8082:80'
+    volumes:
+     - './gitlab/config:/etc/gitlab'
+     - './gitlab/logs:/var/log/gitlab'
+     - './gitlab/data:/var/opt/gitlab'
+
+  postgres:
+    container_name: pactbroker_postgres
+    networks:
+     - devNW
+    build: ./postgres
+    healthcheck:
+      test: psql postgres --command "select 1" -U postgres
+    ports:
+      - "8083:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+
+#here starts the dockerized deployment environment
+
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    networks:
+      - devNW
+    ports:
+      - "9000:80"
+    volumes:
+      - ./frontend/html:/usr/local/apache2/htdocs
+
+  backend:
+    container_name: backend
+    build: ./backend
+    networks:
+      - devNW
+    ports:
+      - "9001:80"
+    volumes:
+      - ./backend/html:/var/www/html
+    environment:
+      DATABASE_SERVER: "http://localhost:9002"
+
+  postgres:
+    container_name: deployment_postgres
+    networks:
+     - devNW
+    image: postgres
+    healthcheck:
+      test: psql postgres --command "select 1" -U postgres
+    ports:
+      - "9002:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres

@@ -1,0 +1,8 @@
+*.log
+gitlab/config/*
+gitlab/logs/*
+gitlab/data/*
+
+jenkins/persistent/*
+fronent/html/*
+backend/html/*
