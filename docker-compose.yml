@@ -22,19 +22,19 @@ services:
     environment:
       JENKINS_HOST_HOME: "/data/jenkins"
 
-  pacbroker:
+  pactbroker:
     container_name: pactbroker
     networks:
      - devNW
     image: dius/pact-broker
     links:
-      - postgres
+      - pactbroker_postgres
     ports:
       - "8081:80"
     environment:
       PACT_BROKER_DATABASE_USERNAME: postgres
       PACT_BROKER_DATABASE_PASSWORD: password
-      PACT_BROKER_DATABASE_HOST: postgres
+      PACT_BROKER_DATABASE_HOST: pactbroker_postgres
       PACT_BROKER_DATABASE_NAME: postgres
       PACT_BROKER_WEBHOOK_SCHEME_WHITELIST: http
 
@@ -51,7 +51,7 @@ services:
      - './gitlab/logs:/var/log/gitlab'
      - './gitlab/data:/var/opt/gitlab'
 
-  postgres:
+  pactbroker_postgres:
     container_name: pactbroker_postgres
     networks:
      - devNW
@@ -76,6 +76,7 @@ services:
       - "9000:80"
     volumes:
       - ./frontend/html:/usr/local/apache2/htdocs
+    entrypoint: /root/entrypoint.sh
 
   backend:
     container_name: backend
@@ -88,8 +89,9 @@ services:
       - ./backend/html:/var/www/html
     environment:
       DATABASE_SERVER: "http://localhost:9002"
+    entrypoint: /root/entrypoint.sh
 
-  postgres:
+  deployment_postgres:
     container_name: deployment_postgres
     networks:
      - devNW

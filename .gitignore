@@ -6,7 +6,11 @@ gitlab/logs/*
 gitlab/data/*
 !/gitlab/data/.keep
 
+/keys
+/jenkins/keys
+/frontend/authorized_keys
+/backend/authorized_keys
 jenkins/persistent/*
 !jenkins/persistent/.keep
-fronent/html/*
+frontend/html/*
 backend/html/*
