@@ -9,7 +9,6 @@ services:
   jenkins:
     container_name: jenkins    
     build: ./jenkins    
-    # user: jenkins
     networks:
       - devNW
     ports:
@@ -88,7 +87,7 @@ services:
     volumes:
       - ./backend/html:/var/www/html
     environment:
-      DATABASE_SERVER: "http://localhost:9002"
+      DATABASE_SERVER: deployment_postgres 
     entrypoint: /root/entrypoint.sh
 
   deployment_postgres:
