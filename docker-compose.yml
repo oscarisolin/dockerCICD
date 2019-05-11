@@ -85,7 +85,7 @@ services:
     ports:
       - "9001:80"
     volumes:
-      - ./backend/html:/var/www/html
+      - ./backend/html:/usr/local/apache2/htdocs
     environment:
       DATABASE_SERVER: deployment_postgres 
     entrypoint: /root/entrypoint.sh
